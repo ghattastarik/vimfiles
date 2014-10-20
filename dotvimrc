@@ -1,0 +1,257 @@
+" copied from amix.dk/vim/vimrc.html and github.com/spf13/spf13-vim/blob/3.0/.vimrc
+" disable vi compatibility
+set nocompatible
+" disable filetype controls
+filetype off
+" adjust vim runtime path to include vundle
+set rtp+=~/.vim/bundle/vundle/
+" start vundle function
+call vundle#rc()
+" vundle plugins
+Plugin 'gmarik/vundle'
+Plugin 'scrooloose/nerdtree.git'
+Plugin 'kien/ctrlp.vim.git'
+Plugin 'tpope/vim-surround.git'
+Plugin 'scrooloose/nerdcommenter.git'
+Plugin 'scrooloose/syntastic.git'
+Plugin 'myusuf3/numbers.vim.git'
+Plugin 'Lokaltog/vim-easymotion.git'
+Plugin 'Majutsushi/tagbar.git'
+Plugin 'SirVer/ultisnips.git'
+Plugin 'tpope/vim-fugitive.git'
+Plugin 'Shougo/neocomplete.vim.git'
+Plugin 'Raimondi/delimitMate.git'
+Plugin 'bling/vim-airline.git'
+Plugin 'tpope/vim-abolish.git'
+Plugin 'honza/vim-snippets'
+" turn filetype functionality back on
+filetype plugin indent on
+" general vim configurations
+" number of history
+set history=500
+" autoread when file is changed from outside
+set autoread
+" configuring map leader
+let mapleader=","
+let g:mapleader=","
+" enable syntax
+syntax enable
+syntax on
+" enable mouse usage
+set mouse=a
+" hide mouse when typing
+set mousehide
+scriptencoding utf-8
+" spell checking
+set spell
+" turn on wildmenu
+set wildmenu
+" show current position
+set ruler
+" height of command bar
+set cmdheight=2
+" buffer hidden when abandoned
+set hid
+" configure backspace to act as it should
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+" ignore case when searching
+set ignorecase
+" be case sensitive if search has capital letters
+set smartcase
+" highlight search results
+set hlsearch
+" makes search act like modern browsers (search as you type)
+set incsearch
+" dont redraw while executing macros (increases performance)
+set lazyredraw
+" turn magic on for regular expressions
+set magic
+" show matching brackets when over them
+set showmatch
+" blinking rate with matching brackets in tenths of secs
+set mat=5
+" disable error sounds
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+" setting colors, fonts and colorschemes
+colorscheme molokai
+set background=dark
+" set extra options when running in gui mode
+if has("gui_running")
+    set guioptions-=T
+    set guioptions+=e
+    set t_Co=256
+    set guitablabel=%M\ %t
+endif
+" set unix as standard file type
+set ffs=unix
+" set utf8 as standard encoding and en_US as standard language
+set encoding=utf8
+" turn off file backups and undos
+set nobackup
+set nowb
+set noswapfile
+" setting tabs and indentations
+" using spaces instead of tabs
+set expandtab
+" be smart when using tabs
+set smarttab
+" ajust tabs to equal 4 spaces
+set shiftwidth=4
+set tabstop=4
+" linebreak on 500 characters
+set lbr
+set tw=500
+" set auto indent, smart indent and wrap lines
+set ai
+set si
+set wrap
+" visual mode configuration
+" pressing * or # searches for current selection (idea by Michael Naumann
+vnoremap <silent> * :call VisualSelection('f')<CR>
+vnoremap <silent> # :call VisualSelection('b')<CR>
+" always show status line
+set laststatus=2
+" format status line
+"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
+" helper functions
+" returns true if paste mode is enabled
+function! HasPaste()
+    if &paste
+        return 'PASTE MODE '
+    en
+    return ''
+endfunction
+" visual selection function
+function! CmdLine(str)
+    exe "menu Foo.Bar :" . a:str
+    emenu Foo.Bar
+    unmenu Foo
+endfunction
+function! VisualSelection(direction) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+    let l:pattern = escape(@", '\\/.*$^~[]')
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+    if a:direction == 'b'
+        execute "normal ?" . l:pattern . "^M"
+    elseif a:direction == 'gv'
+        call CmdLine("vimgrep " . '/' . l:pattern . '/' . '**/*.')
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/' . l:pattern . '/')
+    elseif a:direction == 'f'
+        execute "normal /" . l:pattern . "^M"
+    endif
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
+" mappings
+" quick save
+nmap <leader>w :w!<CR>
+" Remap vim 0 to first non blank character
+map 0 ^
+" move a line of text using alt+jk
+nmap <M-j> mz:m+<CR>`z
+nmap <M-k> mz:m-2<CR>`z
+vmap <M-j> :m'>+<CR>`<my`>mzgv`yo`z
+vmap <M-k> :m'<-2<CR>`>my`<mzgv`yo`z
+" pressing gv to vimgrep selected text
+vnoremap <silent> gv :call VisualSelection('gv')<CR>
+" when you press <leader>r search and replace selected text
+vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
+"vimgreps in current file
+" cope, display search result in cope with <leader>cc and go to next/prev search with <leader>n/<leader>p
+map <leader>cc :botright cope<CR>
+map <leader>co ggVGy:tabnew<CR>:set syntax=qf<CR>pgg
+map <leader>n :cn<CR>
+map <leader>p :cp<CR>
+" pressing ss to toggle spell checking 
+map <leader>ss :setlocal spell!<CR>
+map <leader>tn :tabnew<CR>
+map <leader>tl :tabprevious<CR>
+map <leader>tr :tabnext<CR>
+" other custom mappings
+inoremap <leader>p<CR> <CR><ESC><S-o><tab>
+"
+"
+"
+"
+" configuring plugins
+" ctrlp
+nmap mru :CtrlPMRU<CR>
+nmap ctp :CtrlP<CR> 
+" nerdtree
+" map <c-e> <plug>NERDTreeTabsToggle<CR>
+map <c-e> :NERDTreeToggle<CR>
+map <leader>e :NERDTreeFind<CR>
+nmap <leader>nt :NERDTreeFind<CR>
+
+let NERDTreeShowBookmarks=1
+let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+let NERDTreeChDirMode=0
+let NERDTreeQuitOnOpen=1
+let NERDTreeMouseMode=2
+let NERDTreeShowHidden=1
+let NERDTreeKeepTreeInNewTab=1
+let g:nerdtree_tabs_open_on_gui_startup=0
+" nerdcommenter
+    "mappings defaulted as ,c<space> to toggle comments, ,cm to minimal comment etc.
+" surround
+  " surrounds can be deleted with ds{, ds<q>, etc or changed with csw", csW", cs[{, cs[}, or added with yss", ySS", ysiw), <C-s><html> for insert mode or s and S for visual mode etc
+" ultisnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<C-b>"
+let g:UltiSnipsJumpBackwardTrigger="<C-v>"
+let g:UltiSnipsEditSplit="vertical"
+" syntastic
+" easymotion
+nmap <leader><leader>2s <Plug>(easymotion-s2)
+nmap <leader><leader>2t <Plug>(easymotion-t2)
+map / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+map n <Plug>(easymotion-next)
+map N <plug>(easymotion-prev)
+map <leader>l <Plug>(easymotion-lineforward)
+map <leader>k <Plug>(easymotion-k)
+map <leader>j <Plug>(easymotion-j)
+map <leader>h <Plug>(easymotion-linebackward)
+let g:EasyMotion_startofline=0 "keeps cursor column when doing jk moves
+let g:EasyMotion_smartcase=1
+" delimitmate
+    "can use mappings instead of plugin, should consider removing
+" abolish
+
+" airline
+let g:airline_theme             = 'powerlineish'
+let g:airline_enable_branch     = 1
+let g:airline_enable_syntastic  = 1
+
+    " vim-powerline symbols
+"let g:airline_left_sep          = '⮀'
+"let g:airline_left_alt_sep      = '⮁'
+"let g:airline_right_sep         = '⮂'
+"let g:airline_right_alt_sep     = '⮃'
+"let g:airline_branch_prefix     = '⭠'
+"let g:airline_readonly_symbol   = '⭤'
+"let g:airline_linecolumn_prefix = '⭡'
+" numbers
+set number
+" tagbar
+nnoremap <silent> <leader>tt :TagbarToggle<CR>
+" neocomplete
+
+" fugitive
+nnoremap <silent> <leader>gs :Gstatus<CR>
+nnoremap <silent> <leader>gd :Gdiff<CR>
+nnoremap <silent> <leader>gc :Gcommit<CR>
+nnoremap <silent> <leader>gb :Gblame<CR>
+nnoremap <silent> <leader>gl :Glog<CR>
+nnoremap <silent> <leader>gp :Git push<CR>
+nnoremap <silent> <leader>gr :Gread<CR>
+nnoremap <silent> <leader>gw :Gwrite<CR>
+nnoremap <silent> <leader>ge :Gedit<CR>
+nnoremap <silent> <leader>gi :Git add -p %<CR>
+nnoremap <silent> <leader>gg :SignifyToggle<CR>
